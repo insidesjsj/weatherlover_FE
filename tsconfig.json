@@ -22,5 +22,9 @@
   },
   "include": [
     "src"
-  ]
+  ],
+  "types": [
+    "proj4"
+  ],
+  "moduleResolution": "node",
 }
