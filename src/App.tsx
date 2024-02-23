@@ -2,9 +2,8 @@ import './App.css';
 import {Main} from './pages/Main';
 import {createContext, FC, useEffect, useReducer, useRef, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
-import {call} from './service/ApiService';
-import {API_BASE_URL} from './app-config';
-import axios from 'axios';
+import {callGet} from './service/ApiService';
+import {getCurrentLocation} from './geoLocation/getCurrentLocation';
 
 export interface dataType {
     id: number,
@@ -17,6 +16,7 @@ export interface weatherAction {
     type: string,
     data: dataType[],
 }
+
 
 function reducer(state: dataType[], action: weatherAction): dataType[] {    // reducer 에 타입 설정을 안해줘서 에러가 났었다.
     switch (action.type) {
@@ -49,6 +49,8 @@ const initData = [
         temp: 3,
     },
 ]
+
+
 export const weatherStateContext = createContext<dataType[]>(initData)
 const App: FC = () => {
     const [weatherData, dispatch] = useReducer(reducer, [])
@@ -56,21 +58,6 @@ const App: FC = () => {
     const [isDataLoaded, setIsDataLoaded] = useState(false)
 
     useEffect(() => {
-        console.log(API_BASE_URL)
- /*       call({
-            api: "weather",
-            method: "GET",
-            request: null
-        })*/
-        const getWeatherData = async () => {
-            try {
-                const response = await axios.get('http://localhost:8055/weather')
-                console.log('Weather Data:', response.data)
-            } catch (error) {
-                console.error('Error fetching weather data:', error)
-            }
-        }
-        getWeatherData()
         dispatch({ type: "INIT", data: initData })
         setIsDataLoaded(true)
     }, [])

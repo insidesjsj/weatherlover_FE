@@ -1,52 +1,26 @@
 import { API_BASE_URL } from "../app-config";
+import axios from 'axios';
 
 interface CallDTO {
     api: string 
-    method: string 
-    request: string | null 
+    request: object | null
 }
 
-export const call = ({ api, method, request }: CallDTO) => {
-    const url = API_BASE_URL + api
-    const headers = {
-        'Content-Type': 'application/json',
-    } 
-
-    // Request Body 설정 (GET 요청이 아닌 경우에만)
-    const options = method === 'GET' ? { method, headers } : { method, headers, body: JSON.stringify(request) } 
-
-    fetch(url, options)
-        .then(response => {
-            if (response.ok) {
-                return response.json() 
-            } else {
-                throw new Error(`Failed API call. Status: ${response.status}`) 
-            }
-        })
-        .then(data => {
-            console.log('API call successful:', data) 
-        })
-        .catch(error => {
-            console.error('Error during API call:', error) 
-        }) 
-} 
-/*    let options = {
-        headers: new Headers({
-            "Content-Type": "application/json",
-        }),
-        url: API_BASE_URL + api,
-        method: method,
-    } 
-    if (request) {
-        // GET method
-        options.body = JSON.stringify(request) 
+export const callGet = async ({ api,  request }: CallDTO) => {
+    try {
+        const response = await axios.get(API_BASE_URL + api)
+        console.log(`${api} data: `, response.data)
+    } catch (error) {
+        console.error('Error fetching weather data:', error)
     }
-    return fetch(options.url, options).then((response) =>
-        response.json().then((json) => {
-            if (!response.ok) {
-                // response.ok가 true이면 정상적인 리스폰스를 받은것, 아니면 에러 리스폰스를 받은것.
-                return Promise.reject(json) 
-            }
-            return json 
-        })
-    ) */
+}
+
+export const callPost = async ({api, request}: CallDTO) => {
+    try {
+        console.log(request)
+        const response = await axios.post(API_BASE_URL + api, request)
+    } catch (error) {
+        console.error(`Error getting or sending ${api}:`, error);
+    }
+
+}
