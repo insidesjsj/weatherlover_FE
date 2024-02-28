@@ -1,6 +1,6 @@
 import React, {FC, StyleHTMLAttributes, useState} from 'react';
-import {Icon} from './Icon';
-import {Button} from './Button';
+import {Icon} from '../public/Icon';
+import {Button} from '../public/Button';
 
 export type HeaderProps = {
     left?: {

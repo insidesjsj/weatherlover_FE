@@ -1,5 +1,5 @@
 import {FC} from 'react';
-import {Icon} from './Icon';
+import {Icon} from '../public/Icon';
 
 export type WeatherItemProps = {
     region: string,

@@ -1,9 +1,9 @@
-import {Header} from './Header';
+import {Header} from '../component/Header';
 import {FC, useContext} from 'react';
 import {weatherStateContext} from '../App';
 import AddCurrentWeather from './AddCurrentWeather';
 import {AddFavoriteRegList} from './AddFavoriteRegList';
-import SearchGroup from './SearchGroup';
+import SearchGroup from '../public/SearchGroup';
 
 export type AddRegionProps = {
     closeModal: () => void
@@ -18,7 +18,6 @@ export const AddRegion: FC<AddRegionProps> = ({ closeModal }) => {
                 title="위치"
                 right={{ menu: "  " }}
             />
-            <SearchGroup />
             <AddCurrentWeather />
             <AddFavoriteRegList />
         </div>

@@ -2,8 +2,6 @@ import './App.css';
 import {Main} from './pages/Main';
 import {createContext, FC, useEffect, useReducer, useRef, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
-import {callGet} from './service/ApiService';
-import {getCurrentLocation} from './geoLocation/getCurrentLocation';
 
 export interface dataType {
     id: number,
@@ -54,7 +52,6 @@ const initData = [
 export const weatherStateContext = createContext<dataType[]>(initData)
 const App: FC = () => {
     const [weatherData, dispatch] = useReducer(reducer, [])
-    const idRef = useRef(0)
     const [isDataLoaded, setIsDataLoaded] = useState(false)
 
     useEffect(() => {
@@ -68,7 +65,10 @@ const App: FC = () => {
         )
     } else {
         return (
+/*
                 <div className="ml-auto mr-auto text-center bg-white w-3/6 h-full">
+*/
+                <div className="">
                     <weatherStateContext.Provider value={weatherData}>
                         <Routes>
                             <Route path={"/"} element={<Main />} />
