@@ -14,6 +14,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
     return (
         <div>
             <button className={className} onClick={onClick}>{text}</button>
+
         </div>
     )
 }

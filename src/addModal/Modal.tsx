@@ -3,13 +3,14 @@ import React, {FC} from 'react';
 export type ModalProps = {
     openAdd? : boolean
     children: React.ReactNode
+    divClassName?: String | null
 }
-export const Modal: FC<ModalProps> = ({openAdd, children}) => {
-
+export const Modal: FC<ModalProps> = ({openAdd, children, divClassName}) => {
+    const _className  = "" + divClassName
     return (
         <div>
             {openAdd && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                <div className={_className}>
                     {children}
                 </div>
             )}

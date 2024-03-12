@@ -28,7 +28,6 @@ export type HeaderProps = {
     }
 }
 
-
 export const Header: FC<HeaderProps> = ({title, left, right, leftButton, rightButton}) => {
 
     return (
