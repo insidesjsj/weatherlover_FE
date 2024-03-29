@@ -2,7 +2,9 @@ import './App.css';
 import {Main} from './pages/Main';
 import {createContext, FC, useEffect, useReducer, useRef, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
+import logo1 from './img/LOAD/loadingLogo.gif'
 
+/*
 export interface dataType {
     id: number,
     region: string,
@@ -46,11 +48,12 @@ const initData = [
         weatherIcon: 'sunny',
         temp: 3,
     },
-]
+]*/
 
 
-export const weatherStateContext = createContext<dataType[]>(initData)
+// export const weatherStateContext = createContext<dataType[]>(initData)
 const App: FC = () => {
+/*
     const [weatherData, dispatch] = useReducer(reducer, [])
     const [isDataLoaded, setIsDataLoaded] = useState(false)
 
@@ -58,25 +61,34 @@ const App: FC = () => {
         dispatch({ type: "INIT", data: initData })
         setIsDataLoaded(true)
     }, [])
+*/
 
-    if (!isDataLoaded) {
+    return (
+        <div>
+            <Routes>
+                <Route path={"/"} element={<Main/>}/>
+            </Routes>
+        </div>
+    )
+/*    if (!isDataLoaded) {
         return (
-            <div>날씨 데이터를 불러오는 중입니다.</div>
+            <div className="fixed top-0 left-0 w-full h-full bg-gray-600 flex flex-col justify-center items-center">
+                <img className="rounded-full w-32" src={logo1}/>
+                <span className="font-['SUITE-Regular'] text-white mt-4">날씨 데이터를 로딩 중입니다</span>
+            </div>
         )
     } else {
         return (
-/*
-                <div className="ml-auto mr-auto text-center bg-white w-3/6 h-full">
-*/
-                <div className="">
-                    <weatherStateContext.Provider value={weatherData}>
-                        <Routes>
-                            <Route path={"/"} element={<Main />} />
-                        </Routes>
-                    </weatherStateContext.Provider>
-                </div>
+            <div>
+                <weatherStateContext.Provider value={weatherData}>
+                    <Routes>
+                        <Route path={"/"} element={<Main/>}/>
+                    </Routes>
+                </weatherStateContext.Provider>
+            </div>
         )
-    }
+    }*/
+
 }
 
 export default App;

@@ -1,13 +1,10 @@
 import {FC, useContext, useEffect, useState} from 'react';
-import {Icon} from '../public/Icon';
 import {currentWeatherContext, locationContext} from '../pages/Main';
-import {refineSkyState} from '../weather/refineSkyState';
-import {getWeatherIcon} from './getWeatherIcon';
-import {CurrentClothes} from './CurrentClothes';
-import {CurrentTemp} from './CurrentTemp';
-import {CurrentPrecipitation} from './CurrentPrecipitation';
-import {CurrentHumidity} from './CurrentHumidity';
-import {CurrentWind} from './CurrentWind';
+import {Clothes} from './Clothes';
+import {Temp} from './Temp';
+import {Precipitation} from './Precipitation';
+import {Humidity} from './Humidity';
+import {Wind} from './Wind';
 
 export type CurrentWeatherProps = {
     category: string
@@ -15,19 +12,22 @@ export type CurrentWeatherProps = {
 }
 
 export const CurrentWeather: FC<CurrentWeatherProps> = ({category, location}) => {
-
+    const weatherData = useContext(currentWeatherContext)
+    const kind = "current"
     const whatCategory = () => {
-        switch (category) {
-            case "온도":
-                return <CurrentTemp/>
-            case "옷차림":
-                return <CurrentClothes/>
-            case "강수":
-                return <CurrentPrecipitation/>
-            case "습도":
-                return <CurrentHumidity/>
-            case "바람":
-                return <CurrentWind/>
+        if(weatherData) {
+            switch (category) {
+                case "온도":
+                    return <Temp TMP={weatherData?.TMP} PTY={weatherData?.PTY} SKY={weatherData?.SKY} kind={kind} />
+                case "옷차림":
+                    return <Clothes TMP={Number(weatherData?.TMP)} WSD={Number(weatherData?.WSD)} kind={kind} />
+                case "강수":
+                    return <Precipitation PCP={weatherData.PCP} kind={kind} />
+                case "습도":
+                    return <Humidity REH={weatherData.REH} kind={kind} />
+                case "바람":
+                    return <Wind WSD={weatherData.WSD} kind={kind} />
+            }
         }
     }
 
@@ -36,6 +36,9 @@ export const CurrentWeather: FC<CurrentWeatherProps> = ({category, location}) =>
             <div className="font-['SUITE-Regular'] w-full mt-3 py-6">
                 <div className="text-3xl">{location}</div>
                 {whatCategory()}
+            </div>
+            <div>
+
             </div>
         </div>
     )

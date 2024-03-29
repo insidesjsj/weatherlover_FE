@@ -26,7 +26,7 @@ export type ModalContentsProps = {
 export const ModalContents: FC<ModalContentsProps> = ({ children }) => {
 
     return (
-        <div className="w-2/6 h-3/4 bg-white p-4 rounded">
+        <div className="w-2/6 h-3/4 bg-white p-4 rounded-2xl">
             {children}
         </div>
     )

@@ -1,13 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {CurrentWeather} from '../currentWeather/CurrentWeather';
-import {weatherStateContext} from '../App';
 import {getCurrentLocation} from '../geoLocation/getCurrentLocation';
 import {getCoordinate} from '../geoLocation/getCurrentCoordinate';
-import {callGet, callPost} from '../service/ApiService';
+import {callPost} from '../service/ApiService';
 import WeatherHeader from '../component/WeatherHeader';
 import Divder from '../public/Divder';
-import {Button} from '../public/Button';
-import DayWeather from '../dayWeather/DayWeather';
+import WeekWeather from '../weekWeather/WeekWeather';
+import DayHourlyWeather from '../dayWeather/DayHourlyWeather';
+import logo1 from '../img/LOAD/loadingLogo.gif';
+import WeatherCategory from '../component/WeatherCategory';
 
 interface locationDTO {
     lat: string | null,
@@ -27,16 +28,19 @@ interface currentWeatherDTO {
 }
 
 interface dayWeatherDTO {
-    TMP: string[],    // 날씨
-    POP: string[],    // 강수확률
-    PTY: string[],    // 강수형태
-    PCP: string[],    // 1시간 강수량
-    REH: string[],    // 습도
-    SKY: string[],    // 하늘
-    WSD: string[],    // 풍속
-    TMN: string[],    // 최저기운
-    TMX: string[],    // 최고기온
-    dates: string[],  // 날짜
+    TMP: string[],      // 날씨
+    POP: string[],      // 강수확률
+    PTY: string[],      // 강수형태
+    PCP: string[],      // 1시간 강수량
+    REH: string[],      // 습도
+    SKY: string[],      // 하늘
+    WSD: string[],      // 풍속
+    TMN: string[],      // 최저기운
+    TMX: string[],      // 최고기온
+    dates: string[],    // 날짜
+    TMPTime: string[],  // 시간
+    maxWSD: string,
+    minWSD: string,
 }
 
 export interface regionDTO {
@@ -44,62 +48,41 @@ export interface regionDTO {
     combinedRegion: string,
     nx: string,
     ny: string,
-}
-
-const geolocationOptions = {
-    enableHighAccuracy: true,
-    timeout: 1000 * 10,
-    maximumAge: 1000 * 3600 * 24,
-}
-
-interface WeatherCategoryProps {
-    onClickButton: (category: string) => void;
-    selectedCategory: string;
+    midLandRegionCode?: string,
+    midRegionCode?: string
 }
 
 interface headerProps {
     search: string,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
     regionData: [regionDTO] | undefined,
-    clickRegion: (selectedRegion: string, nx: string, ny: string) => void
+    clickRegion: (selectedRegion: string, nx: string, ny: string, lat: string, lng: string, midRegionCode?: string, midLandRegionCode?: string) => void
 }
 
-const WeatherCategory: React.FC<WeatherCategoryProps> = ({onClickButton, selectedCategory}) => {
-    return (
-        <div className="font-['SUITE-Regular'] mt-2 ml-auto mr-auto w-3/6 flex justify-around text-lg">
-            <Button className={`p-1 border-2 rounded-2xl ${selectedCategory === '온도' && 'bg-blue-500 text-white'}`}
-                    text="온도" onClick={() => onClickButton('온도')}/>
-            <Button className={`p-1 border-2 rounded-2xl ${selectedCategory === '옷차림' && 'bg-blue-500 text-white'}`}
-                    text="옷차림" onClick={() => onClickButton('옷차림')}/>
-            <Button className={`p-1 border-2 rounded-2xl ${selectedCategory === '습도' && 'bg-blue-500 text-white'}`}
-                    text="습도" onClick={() => onClickButton('습도')}/>
-            <Button className={`p-1 border-2 rounded-2xl ${selectedCategory === '강수' && 'bg-blue-500 text-white'}`}
-                    text="강수" onClick={() => onClickButton('강수')}/>
-            <Button className={`p-1 border-2 rounded-2xl ${selectedCategory === '바람' && 'bg-blue-500 text-white'}`}
-                    text="바람" onClick={() => onClickButton('바람')}/>
-        </div>
-    )
-}
-
+export const categoryContext = React.createContext("온도")
 export const searchContext = React.createContext<headerProps | undefined>(undefined)
 export const currentWeatherContext = React.createContext<currentWeatherDTO | undefined>(undefined)
 export const dayWeatherContext = React.createContext<dayWeatherDTO | undefined>(undefined)
 export const locationContext = React.createContext<locationDTO | undefined>(undefined)
 export const Main: React.FC = () => {
-    const data = useContext(weatherStateContext)
-    const [index, setIndex] = useState(0)
-    const [currentRegion, setCurrentRegion] = useState(data[index].region)
     const [location, setLocation] = useState<locationDTO>()
+    const [currentRegion, setCurrentRegion] = useState({
+        address: "",
+        midLandRegionCode: "",
+        midRegionCode: "",
+    })
     const [currentWeather, setCurrentWeather] = useState<currentWeatherDTO>()
     const [dayWeather, setDayWeather] = useState<dayWeatherDTO>()
+
     const locDataLoaded = !location ? false : true   // useEffect에 넣을 상수. location 값이 비어있지 않으면 true 반환
     const [category, setCategory] = useState("온도")
+
     const [searchValue, setSearchValue] = useState("")
     const [regionData, setRegionData] = useState<[regionDTO]>()
 
 
     // 위경도와 x,y 좌표를 얻는 함수
-    const getLoction = async () => {
+    const getLocation = async () => {
         const location = await getCurrentLocation() // 위 경도 불러오기
         if (location) {
             const grid = getCoordinate(location.latitude, location.longitude)  // x, y 좌표값 구하기
@@ -114,12 +97,9 @@ export const Main: React.FC = () => {
             console.error('Failed to get location.')
         }
     }
-    useEffect(() => {
-        setCurrentRegion(data[index].region)
-    }, [data, index])
 
     useEffect(() => {
-        getLoction()
+        getLocation()
         callingOrder()
     }, [locDataLoaded])
 
@@ -145,12 +125,12 @@ export const Main: React.FC = () => {
                 setCurrentWeather(ultraSrtFcstResponse)
                 setDayWeather(SrtFcstResponse)
                 console.log(currentWeather)
+                console.log("현재 위치에 대한 currentRegion State" + currentRegion)
             } catch (error) {
                 console.error('Error in fetchData:', error)
             }
         }
     }
-
     const onClickButton = (selectedCategory: string) => {
         setCategory(selectedCategory) // 여기에서 선택한 카테고리에 따라 필요한 로직을 수행할 수 있습니다.
     }
@@ -165,14 +145,14 @@ export const Main: React.FC = () => {
             api: 'search',
             request: {inputValue: newValue}
         })
+
         if (getSearchRegion) {
             setRegionData(getSearchRegion)
             console.log(regionData)
         }
     }
 
-
-    const clickRegion = async (selectedRegion: string, nx: string, ny: string) => {
+    const clickRegion = async (selectedRegion: string, nx: string, ny: string,  lat: string, lng:string, midRegionCode?: string, midLandRegionCode?: string) => {
         const ultraSrtFcstResponse = await callPost({
             api: 'getUltraSrtFcst',
             request: {nx: nx, ny: ny}
@@ -181,11 +161,18 @@ export const Main: React.FC = () => {
             api: 'getSrtFcst',
             request: {nx: nx, ny: ny}
         })
-        setCurrentRegion(selectedRegion)
+        if (midRegionCode && midLandRegionCode) {
+            setCurrentRegion({
+                address: selectedRegion,
+                midRegionCode: midRegionCode,
+                midLandRegionCode: midLandRegionCode,
+            })
+        }
         setCurrentWeather(ultraSrtFcstResponse)
         setDayWeather(SrtFcstResponse)
         console.log("하루 데이터" + dayWeather)
     }
+
     const searchContextValue = React.useMemo(() => ({
         search: searchValue,
         onChange: onChangeSearchGroup,
@@ -195,7 +182,12 @@ export const Main: React.FC = () => {
 
 
     if (currentWeather === undefined) {
-        return <div className="ml-auto mr-auto text-center w-3/6 h-full">날씨 데이터를 불러오는 중입니다.</div>
+        return (
+            <div className="fixed top-0 left-0 w-full h-full bg-gray-600 flex flex-col justify-center items-center">
+                <img className="rounded-full w-32" src={logo1}/>
+                <span className="font-['SUITE-Regular'] text-white mt-4">날씨 데이터를 로딩 중입니다</span>
+            </div>
+        )
     } else {
         return (
             <div className="m-0 text-center w-full">
@@ -205,17 +197,19 @@ export const Main: React.FC = () => {
                 <Divder/>
                 <div className="w-full bg-gray-300 pt-1 pb-1">
                     <WeatherCategory onClickButton={onClickButton} selectedCategory={category}/>
-                    <locationContext.Provider value={location}>
-                        <currentWeatherContext.Provider value={currentWeather}>
-                            <CurrentWeather category={category} location={currentRegion}/>
-                        </currentWeatherContext.Provider>
-                    </locationContext.Provider>
-                    <dayWeatherContext.Provider value={dayWeather}>
-                        <DayWeather/>
-                    </dayWeatherContext.Provider>
+                    <categoryContext.Provider value={category}>
+                        <dayWeatherContext.Provider value={dayWeather}>
+                            <locationContext.Provider value={location}>
+                                <currentWeatherContext.Provider value={currentWeather}>
+                                    <CurrentWeather category={category} location={currentRegion.address}/>
+                                </currentWeatherContext.Provider>
+                                <DayHourlyWeather  />
+                                <WeekWeather midRegionCode={currentRegion.midRegionCode} midLandRegionCode={currentRegion.midLandRegionCode} />
+                            </locationContext.Provider>
+                        </dayWeatherContext.Provider>
+                    </categoryContext.Provider>
                 </div>
             </div>
         )
     }
-
 }
