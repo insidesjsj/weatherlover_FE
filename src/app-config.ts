@@ -8,5 +8,5 @@ if (hostname === "localhost") {
     backendHost = "http://43.201.71.47:8080/"
 }*/
 
-backendHost = "http://43.201.71.47:8080/"
+backendHost = "https://weatherlover.store/"
 export const API_BASE_URL = `${backendHost}`
