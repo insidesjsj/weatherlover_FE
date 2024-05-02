@@ -1,14 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {CurrentWeather} from '../currentWeather/CurrentWeather';
-import {getCurrentLocation} from '../geoLocation/getCurrentLocation';
-import {getCoordinate} from '../geoLocation/getCurrentCoordinate';
+import {CurrentWeather} from '../component/currentWeather/CurrentWeather';
+import {getCurrentLocation} from '../utills/geoLocation/getCurrentLocation';
+import {getCoordinate} from '../utills/geoLocation/getCurrentCoordinate';
 import {callPost} from '../service/ApiService';
-import WeatherHeader from '../component/WeatherHeader';
-import Divder from '../public/Divder';
-import WeekWeather from '../weekWeather/WeekWeather';
-import DayHourlyWeather from '../dayWeather/DayHourlyWeather';
-import logo1 from '../img/LOAD/loadingLogo.gif';
+import WeatherHeader from '../component/header/Header';
+import Divder from '../component/Divder';
+import TendaysWeather from '../component/tendaysWeather/TendaysWeather';
+import HourlyWeather from '../component/hourlyWeather/HourlyWeather';
 import WeatherCategory from '../component/WeatherCategory';
+import Loading from '../component/Loading';
 
 interface locationDTO {
     lat: string | null,
@@ -181,12 +181,9 @@ export const Main: React.FC = () => {
     }), [searchValue, onChangeSearchGroup, regionData, clickRegion])
 
 
-    if (currentWeather === undefined) {
+    if (!currentWeather) {
         return (
-            <div className="fixed top-0 left-0 w-full h-full bg-gray-600 flex flex-col justify-center items-center">
-                <img className="rounded-full w-32" src={logo1}/>
-                <span className="font-['SUITE-Regular'] text-white mt-4">날씨 데이터를 로딩 중입니다</span>
-            </div>
+            <Loading />
         )
     } else {
         return (
@@ -203,8 +200,9 @@ export const Main: React.FC = () => {
                                 <currentWeatherContext.Provider value={currentWeather}>
                                     <CurrentWeather category={category} location={currentRegion.address}/>
                                 </currentWeatherContext.Provider>
-                                <DayHourlyWeather  />
-                                <WeekWeather midRegionCode={currentRegion.midRegionCode} midLandRegionCode={currentRegion.midLandRegionCode} />
+                                <HourlyWeather/>
+                                <TendaysWeather midRegionCode={currentRegion.midRegionCode}
+                                                midLandRegionCode={currentRegion.midLandRegionCode}/>
                             </locationContext.Provider>
                         </dayWeatherContext.Provider>
                     </categoryContext.Provider>

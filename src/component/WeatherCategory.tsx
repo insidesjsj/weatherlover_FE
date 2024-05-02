@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button} from '../public/Button';
+import {Button} from './Button';
 interface WeatherCategoryProps {
     onClickButton: (category: string) => void;
     selectedCategory: string;

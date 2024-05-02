@@ -2,10 +2,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/*.material-icons {
-  font-family: 'Material Icons';
-  display: inline-block;
-}*/
 .material-icons {
   font-family: 'Material Icons';
   font-weight: normal;
