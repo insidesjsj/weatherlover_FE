@@ -1,6 +1,7 @@
 import React, {FC, useContext, useEffect, useState} from 'react';
 import {refineSkyState} from '../../utills/refineWeather/refineSkyState';
-import {dayWeatherContext} from '../../pages/Main';
+import {useRecoilValue} from 'recoil';
+import {hourlyWeatherState} from '../../recoilState';
 
 
 interface TempProps {
@@ -10,7 +11,7 @@ interface TempProps {
     kind: string
 }
 export const Temp: FC<TempProps> = ({TMP, PTY, SKY, kind}) => {
-    const dayWeatherData = useContext(dayWeatherContext)
+    const hourlyWeatherData = useRecoilValue(hourlyWeatherState)
     const [skyState, setSkyState] = useState({
         type: "",
         icon: "",
@@ -24,7 +25,7 @@ export const Temp: FC<TempProps> = ({TMP, PTY, SKY, kind}) => {
     }, [PTY, SKY])
 
 
-    if (dayWeatherData && kind === "current") {
+    if (hourlyWeatherData && kind === "current") {
         return (
             <div>
                 <div className="text-2xl my-3">온도</div>
@@ -34,8 +35,8 @@ export const Temp: FC<TempProps> = ({TMP, PTY, SKY, kind}) => {
                 <div className="text-2xl my-3">{TMP}°</div>
                 <div className="text-2xl my-3">{skyState.type}</div>
                 <div className="h-8">
-                    <span>최고: {dayWeatherData?.TMX[0]}°</span>
-                    <span>최저: {dayWeatherData?.TMN[0]}°</span>
+                    <span>최고: {hourlyWeatherData?.TMX[0]}°</span>
+                    <span>최저: {hourlyWeatherData?.TMN[0]}°</span>
                 </div>
             </div>
         )

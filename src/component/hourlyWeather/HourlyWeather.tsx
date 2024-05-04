@@ -1,25 +1,39 @@
-import React, {FC, useContext, useState} from 'react';
-import {categoryContext, dayWeatherContext} from '../../pages/Main';
+import React, {FC, useEffect, useState} from 'react';
 import {Temp} from '../weatherItem/Temp';
 import {Clothes} from '../weatherItem/Clothes';
 import {Precipitation} from '../weatherItem/Precipitation';
 import {Humidity} from '../weatherItem/Humidity';
 import {Wind} from '../weatherItem/Wind';
-
-
+import {useRecoilState, useRecoilValue} from 'recoil';
+import {categoryState, hourlyWeatherState, locationSelector} from '../../recoilState';
+import {callPost} from '../../service/ApiService';
 
 const HourlyWeather: FC = () => {
-    const weatherData = useContext(dayWeatherContext)
-    const category = useContext(categoryContext)
-    const [currentPage, setCurrentPage] = useState(0) 
+    const category = useRecoilValue(categoryState)
+    const locationData = useRecoilValue(locationSelector)
+    const [hourlyWeatherData, setHourlyWeather] = useRecoilState(hourlyWeatherState)
+    // const weatherData = useContext(dayWeatherContext)
+    
+    const [currentPage, setCurrentPage] = useState(0)
 
+    const call = async () => {
+        const SrtFcstResponse = await callPost({
+            api: 'getSrtFcst',
+            request: {nx: locationData?.nx, ny: locationData?.ny}
+        })
+        setHourlyWeather(SrtFcstResponse)
+    }
+
+    useEffect(() => {
+        call()
+    }, [locationData]);
+    
     const whatCategory = () => {
-        if (!weatherData) return null
-
+        if (!hourlyWeatherData) return null
         const itemsPerPage = 6
         const startIdx = currentPage * itemsPerPage 
         const endIdx = (currentPage + 1) * itemsPerPage 
-        const currentPageData = weatherData.TMPTime.slice(startIdx, endIdx) 
+        const currentPageData = hourlyWeatherData.TMPTime.slice(startIdx, endIdx) 
 
         switch (category) {
             case "온도":
@@ -27,9 +41,9 @@ const HourlyWeather: FC = () => {
                     <div className="inline-block mx-4" key={index}>
                         <div>{time}</div>
                         <Temp
-                            TMP={weatherData.TMP[index + startIdx]}
-                            PTY={weatherData.PTY[index + startIdx]}
-                            SKY={weatherData.SKY[index + startIdx]}
+                            TMP={hourlyWeatherData.TMP[index + startIdx]}
+                            PTY={hourlyWeatherData.PTY[index + startIdx]}
+                            SKY={hourlyWeatherData.SKY[index + startIdx]}
                             kind="hourly"
                         />
                     </div>
@@ -39,8 +53,8 @@ const HourlyWeather: FC = () => {
                     <div className="inline-block mx-4" key={index}>
                         <div>{time}</div>
                         <Clothes
-                            TMP={Number(weatherData?.TMP[index + startIdx])}
-                            WSD={Number(weatherData?.WSD[index + startIdx])}
+                            TMP={Number(hourlyWeatherData?.TMP[index + startIdx])}
+                            WSD={Number(hourlyWeatherData?.WSD[index + startIdx])}
                             kind="hourly"
                         />
                     </div>
@@ -50,7 +64,7 @@ const HourlyWeather: FC = () => {
                     <div className="inline-block mx-4" key={index}>
                         <div>{time}</div>
                         <Precipitation
-                            PCP={weatherData.PCP[index + startIdx]}
+                            PCP={hourlyWeatherData.PCP[index + startIdx]}
                             kind="hourly"
                         />
                     </div>
@@ -60,7 +74,7 @@ const HourlyWeather: FC = () => {
                     <div className="inline-block mx-4" key={index}>
                         <div>{time}</div>
                         <Humidity
-                            REH={weatherData.REH[index + startIdx]}
+                            REH={hourlyWeatherData.REH[index + startIdx]}
                             kind="hourly"
                         />
                     </div>
@@ -70,7 +84,7 @@ const HourlyWeather: FC = () => {
                     <div className="inline-block mx-4" key={index}>
                         <div>{time}</div>
                         <Wind
-                            WSD={weatherData.WSD[index + startIdx]}
+                            WSD={hourlyWeatherData.WSD[index + startIdx]}
                             kind="hourly"
                         />
                     </div>
@@ -83,7 +97,7 @@ const HourlyWeather: FC = () => {
         setCurrentPage(page) 
     } 
 
-    const totalPages = weatherData ?  Math.ceil(weatherData.TMPTime.length / 6) : 0 
+    const totalPages = hourlyWeatherData ?  Math.ceil(hourlyWeatherData.TMPTime.length / 6) : 0 
 
     return (
         <div className="ml-auto mr-auto text-center w-3/6 h-full rounded-2xl">

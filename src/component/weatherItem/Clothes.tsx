@@ -1,7 +1,8 @@
 import React, {FC, useContext, useEffect, useState} from 'react';
-import {currentWeatherContext, dayWeatherContext} from '../../pages/Main';
 import {calculateWindChill} from '../../utills/refineWeather/calculateWindChill';
 import {refineClothes} from '../../utills/refineWeather/refineClothes';
+import {useRecoilValue} from 'recoil';
+import {hourlyWeatherState} from '../../recoilState';
 
 interface clothesProps {
     TMP: number | number[]
@@ -10,7 +11,7 @@ interface clothesProps {
 }
 
 export const Clothes: FC<clothesProps> = ({TMP, WSD, kind}) => {
-    const dayWeatherData = useContext(dayWeatherContext)
+    const hourlyWeatherData = useRecoilValue(hourlyWeatherState)
     const [currentCloth, setCurrentCloth] = useState({
         val: "",
         icon: "",
@@ -31,8 +32,8 @@ export const Clothes: FC<clothesProps> = ({TMP, WSD, kind}) => {
                 <div className="text-2xl my-3">{currentCloth?.val}°</div>
                 <div className="text-2xl my-3">체감온도: {currentCloth.WCT}°</div>
                 <div className="h-8">
-                    <span>최고: {calculateWindChill(Number(dayWeatherData?.TMX[0]), Number(dayWeatherData?.maxWSD))}°</span>
-                    <span>최저: {calculateWindChill(Number(dayWeatherData?.TMN[0]), Number(dayWeatherData?.minWSD))}°</span>
+                    <span>최고: {calculateWindChill(Number(hourlyWeatherData?.TMX[0]), Number(hourlyWeatherData?.maxWSD))}°</span>
+                    <span>최저: {calculateWindChill(Number(hourlyWeatherData?.TMN[0]), Number(hourlyWeatherData?.minWSD))}°</span>
                 </div>
             </div>
         )

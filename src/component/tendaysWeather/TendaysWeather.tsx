@@ -1,8 +1,9 @@
 import {FC, useContext, useEffect, useState} from 'react';
-import {dayWeatherContext, locationContext} from '../../pages/Main';
 import {callPost} from '../../service/ApiService';
 import TendaysWeatherItem from './TendaysWeatherItem';
 import {getDate, getDays} from '../../utills/getDate';
+import {useRecoilValue} from 'recoil';
+import {hourlyWeatherState, locationSelector} from '../../recoilState';
 
 interface midWeatherDTO {
     taMax: string[],
@@ -20,15 +21,15 @@ interface WeekWeatherProps {
 
 const TendaysWeather: FC<WeekWeatherProps> = ({midLandRegionCode, midRegionCode}) => {
     const [midWeatherData, setMidWeatherData] = useState<midWeatherDTO>();
-    const location = useContext(locationContext)
-    const dayWeather = useContext(dayWeatherContext)
+    const locationData = useRecoilValue(locationSelector)
+    const hourlyWeatherData = useRecoilValue(hourlyWeatherState)
 
     const midWeather = async () => {
         const getMidWeather = await callPost({
             api: 'midWeather',
             request: {
-                nx: location?.nx,
-                ny: location?.ny,
+                nx: locationData?.nx,
+                ny: locationData?.ny,
                 midLandRegionCode: midLandRegionCode,
                 midRegionCode: midRegionCode
             }
@@ -38,7 +39,7 @@ const TendaysWeather: FC<WeekWeatherProps> = ({midLandRegionCode, midRegionCode}
 
     useEffect(() => {
         midWeather()
-    }, [location, midRegionCode, midLandRegionCode]);
+    }, [locationData, midRegionCode, midLandRegionCode]);
 
     return (
         <div className="font-['SUITE-Regular'] bg-white py-4 ml-auto mr-auto text-center w-3/6 h-full rounded-2xl mb-4">
@@ -52,10 +53,10 @@ const TendaysWeather: FC<WeekWeatherProps> = ({midLandRegionCode, midRegionCode}
                 <span className="w-1/12">최고</span>
                 <span className="w-1/12">최저</span>
             </div>
-            {dayWeather?.TMX.map((value, index) => (
-                <TendaysWeatherItem tmn={Math.floor(Number(dayWeather?.TMN[index])).toString()}
-                                    tmx={Math.floor(Number(dayWeather?.TMX[index])).toString()} date={getDate(index)}
-                                    days={getDays(index)} SKY={dayWeather?.SKY[index]} PTY={dayWeather?.PTY[index]}/>
+            {hourlyWeatherData?.TMX.map((value, index) => (
+                <TendaysWeatherItem tmn={Math.floor(Number(hourlyWeatherData?.TMN[index])).toString()}
+                                    tmx={Math.floor(Number(hourlyWeatherData?.TMX[index])).toString()} date={getDate(index)}
+                                    days={getDays(index)} SKY={hourlyWeatherData?.SKY[index]} PTY={hourlyWeatherData?.PTY[index]}/>
             ))}
             {midWeatherData?.taMax && midWeatherData?.taMax.map((value, index) => (
                 <TendaysWeatherItem tmn={midWeatherData?.taMin[index]} tmx={midWeatherData?.taMax[index]}

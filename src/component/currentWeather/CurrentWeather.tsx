@@ -1,32 +1,47 @@
-import {FC, useContext, useEffect, useState} from 'react';
-import {currentWeatherContext, locationContext} from '../../pages/Main';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import {Clothes} from '../weatherItem/Clothes';
 import {Temp} from '../weatherItem/Temp';
 import {Precipitation} from '../weatherItem/Precipitation';
 import {Humidity} from '../weatherItem/Humidity';
 import {Wind} from '../weatherItem/Wind';
+import {useRecoilState, useRecoilValue} from 'recoil';
+import {categoryState, currentRegionState, curWeatherState, locationSelector} from '../../recoilState';
+import {callPost} from '../../service/ApiService';
 
-export type CurrentWeatherProps = {
-    category: string
-    location: string
-}
-
-export const CurrentWeather: FC<CurrentWeatherProps> = ({category, location}) => {
-    const weatherData = useContext(currentWeatherContext)
+const CurrentWeather: FC = () => {
+    const category = useRecoilValue(categoryState)
+    const locationData = useRecoilValue(locationSelector)
+    const [curWeatherData,setCurWeatherData] = useRecoilState(curWeatherState)
+    const currentRegion = useRecoilValue(currentRegionState)
     const kind = "current"
+
+
+    const call = async () => {
+        const ultraSrtFcstResponse = await callPost({
+            api: 'getUltraSrtFcst',
+            request: {nx: locationData?.nx, ny: locationData?.ny}
+        })
+        setCurWeatherData(ultraSrtFcstResponse)
+    }
+
+    useEffect(() => {
+        call()
+    }, [locationData]);
+
     const whatCategory = () => {
-        if(weatherData) {
+        if(curWeatherData) {
+            console.log("메롱이다 씹것들아")
             switch (category) {
                 case "온도":
-                    return <Temp TMP={weatherData?.TMP} PTY={weatherData?.PTY} SKY={weatherData?.SKY} kind={kind} />
+                    return <Temp TMP={curWeatherData?.TMP} PTY={curWeatherData?.PTY} SKY={curWeatherData?.SKY} kind={kind} />
                 case "옷차림":
-                    return <Clothes TMP={Number(weatherData?.TMP)} WSD={Number(weatherData?.WSD)} kind={kind} />
+                    return <Clothes TMP={Number(curWeatherData?.TMP)} WSD={Number(curWeatherData?.WSD)} kind={kind} />
                 case "강수":
-                    return <Precipitation PCP={weatherData.PCP} kind={kind} />
+                    return <Precipitation PCP={curWeatherData.PCP} kind={kind} />
                 case "습도":
-                    return <Humidity REH={weatherData.REH} kind={kind} />
+                    return <Humidity REH={curWeatherData.REH} kind={kind} />
                 case "바람":
-                    return <Wind WSD={weatherData.WSD} kind={kind} />
+                    return <Wind WSD={curWeatherData.WSD} kind={kind} />
             }
         }
     }
@@ -39,7 +54,7 @@ export const CurrentWeather: FC<CurrentWeatherProps> = ({category, location}) =>
                     <button>#</button>
                 </div>
                 <hr />
-                <div className="text-3xl mt-4">{location}</div>
+                <div className="text-3xl mt-4">{currentRegion.address}</div>
                 <button>
                     {whatCategory()}
                 </button>
@@ -47,3 +62,4 @@ export const CurrentWeather: FC<CurrentWeatherProps> = ({category, location}) =>
         </div>
     )
 }
+export default CurrentWeather;
