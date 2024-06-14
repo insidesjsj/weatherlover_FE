@@ -26,11 +26,10 @@ const CurrentWeather: FC = () => {
 
     useEffect(() => {
         call()
-    }, [locationData]);
+    }, [currentRegion]);
 
     const whatCategory = () => {
         if(curWeatherData) {
-            console.log("메롱이다 씹것들아")
             switch (category) {
                 case "온도":
                     return <Temp TMP={curWeatherData?.TMP} PTY={curWeatherData?.PTY} SKY={curWeatherData?.SKY} kind={kind} />
@@ -51,7 +50,7 @@ const CurrentWeather: FC = () => {
             <div className="font-['SUITE-Regular'] w-full mt-3 py-6">
                 <div className="flex justify-center text-2xl mb-3">
                     <h2 aria-label="현재 날씨">현재 날씨</ h2>
-                    <button>#</button>
+                    <button></button>
                 </div>
                 <hr />
                 <div className="text-3xl mt-4">{currentRegion.address}</div>
