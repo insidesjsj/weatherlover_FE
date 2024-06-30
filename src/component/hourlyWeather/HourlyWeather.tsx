@@ -38,7 +38,7 @@ const HourlyWeather: FC = () => {
         switch (category) {
             case "온도":
                 return currentPageData.map((time: string, index: number) => (
-                    <div className="inline-block mx-4" key={index}>
+                    <div className="inline-block mx-4 mt-4" key={index}>
                         <div>{time}</div>
                         <Temp
                             TMP={hourlyWeatherData.TMP[index + startIdx]}
@@ -47,10 +47,10 @@ const HourlyWeather: FC = () => {
                             kind="hourly"
                         />
                     </div>
-                )) 
+                ))
             case "옷차림":
                 return currentPageData.map((time: string, index: number) => (
-                    <div className="inline-block mx-4" key={index}>
+                    <div className="inline-block mx-4 mt-4" key={index}>
                         <div>{time}</div>
                         <Clothes
                             TMP={Number(hourlyWeatherData?.TMP[index + startIdx])}
@@ -61,7 +61,7 @@ const HourlyWeather: FC = () => {
                 )) 
             case "강수":
                 return currentPageData.map((time: string, index: number) => (
-                    <div className="inline-block mx-4" key={index}>
+                    <div className="inline-block mx-4 mt-4" key={index}>
                         <div>{time}</div>
                         <Precipitation
                             PCP={hourlyWeatherData.PCP[index + startIdx]}
@@ -71,7 +71,7 @@ const HourlyWeather: FC = () => {
                 )) 
             case "습도":
                 return currentPageData.map((time: string, index: number) => (
-                    <div className="inline-block mx-4" key={index}>
+                    <div className="inline-block mx-4 mt-4" key={index}>
                         <div>{time}</div>
                         <Humidity
                             REH={hourlyWeatherData.REH[index + startIdx]}
@@ -81,7 +81,7 @@ const HourlyWeather: FC = () => {
                 )) 
             case "바람":
                 return currentPageData.map((time: string, index: number) => (
-                    <div className="inline-block mx-4" key={index}>
+                    <div className="inline-block mx-4 mt-4" key={index}>
                         <div>{time}</div>
                         <Wind
                             WSD={hourlyWeatherData.WSD[index + startIdx]}
@@ -104,7 +104,7 @@ const HourlyWeather: FC = () => {
             <div className="font-['SUITE-Regular'] w-full my-3 py-6 bg-white rounded-2xl p-6">
                 <div className="flex justify-center text-2xl mb-3">
                     <h2 aria-label="현재 날씨">시간별 날씨</ h2>
-                    <button>#</button>
+                    <button></button>
                 </div>
                 <hr />
                 <div className="flex justify-between">
