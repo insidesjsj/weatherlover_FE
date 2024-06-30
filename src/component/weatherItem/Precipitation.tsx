@@ -36,7 +36,7 @@ export const Precipitation: FC<precipitationProps> = ({PCP, kind}) => {
             <div>
                 <div className="my-2">
                     <img className="mx-auto w-10" src={precipitation.icon} alt={precipitation.type}/>
-                    <div className="text-xl my-3">{precipitation.amount}°</div>
+                    <div className="text-xl my-3">{precipitation.amount}</div>
                 </div>
             </div>
         )
