@@ -38,6 +38,7 @@ const TendaysWeather: FC<WeekWeatherProps> = ({midLandRegionCode, midRegionCode}
     }
 
     useEffect(() => {
+        console.log("TendaysWeather" + midRegionCode, midLandRegionCode)
         midWeather()
     }, [locationData, midRegionCode, midLandRegionCode]);
 
@@ -45,7 +46,7 @@ const TendaysWeather: FC<WeekWeatherProps> = ({midLandRegionCode, midRegionCode}
         <div className="font-['SUITE-Regular'] bg-white py-4 ml-auto mr-auto text-center w-3/6 h-full rounded-2xl mb-4">
             <div className="flex justify-center text-2xl mb-3">
                 <h2 aria-label="현재 날씨">10일 날씨</ h2>
-                <button>#</button>
+                <button></button>
             </div>
             <div className="py-3 flex justify-around">
                 <span className="w-1/6">날짜</span>
