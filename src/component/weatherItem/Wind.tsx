@@ -35,7 +35,7 @@ export const Wind: FC<windProps> = ({WSD, kind}) => {
             <div>
                 <div className="my-2">
                     <img className="mx-auto w-10" src={windClass.icon} alt={windClass.degree} />
-                    <div className="text-xl my-3">{WSD}°</div>
+                    <div className="text-xl my-3">{WSD} m/s</div>
                 </div>
             </div>
         )
